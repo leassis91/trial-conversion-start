@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 from fastapi import APIRouter
+from pydantic import ValidationError
 
 from trial_conversion_model.api.schemas import PredictionRequest, PredictionResponse
 from trial_conversion_model.predict import load_model, predict_proba
@@ -35,4 +36,13 @@ def predict(request: PredictionRequest) -> PredictionResponse:
     #   1. Turn the request into a one-row DataFrame (model_dump gives you a dict).
     #   2. Score it with predict_proba and round to 4 decimals.
     #   3. Turn the probability into a band, and return the PredictionResponse.
-    raise NotImplementedError
+
+    onerow_df = pd.DataFrame([request.model_dump()])  # 1
+    conversion_probability_series = predict_proba(model, onerow_df)
+    conversion_probability = round(conversion_probability_series.item(), 4)  # 2
+    conversion_band = to_band(conversion_probability)  # 3
+
+    return {
+        "conversion_probability": conversion_probability,
+        "conversion_band": conversion_band,
+    }
