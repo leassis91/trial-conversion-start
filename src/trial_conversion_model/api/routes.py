@@ -2,7 +2,6 @@ import logging
 
 import pandas as pd
 from fastapi import APIRouter
-from pydantic import ValidationError
 
 from trial_conversion_model.api.schemas import PredictionRequest, PredictionResponse
 from trial_conversion_model.predict import load_model, predict_proba
