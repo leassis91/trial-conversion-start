@@ -17,9 +17,9 @@ TEST_SIZE = 0.25
 RANDOM_STATE = 42
 
 PARAMS = {
-    "n_estimators": 400,
+    "n_estimators": 1400,
     "max_depth": 3,
-    "learning_rate": 0.05,
+    "learning_rate": 0.01,
     "min_child_weight": 8,
     "subsample": 0.9,
     "colsample_bytree": 0.9,
