@@ -1,7 +1,11 @@
 import json
+import logging
+import os
 from pathlib import Path
 
+import boto3
 import mlflow
+from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
@@ -48,6 +52,16 @@ def train(model_dir: Path = MODEL_DIR) -> dict:
 
     model_dir.mkdir(exist_ok=True)
     model.save_model(model_dir / "model.json")
+
+    ###############################################
+    # Uploading to S3 and keeping it local as well (as a dev env)
+    s3 = boto3.client("s3")
+    bucket = "trial-conversion-artifacts-leandro"
+
+    with open((model_dir / "model.json"), "rb") as file_name:
+        s3.upload_fileobj(file_name, bucket, "models/model.json")
+    ###############################################
+
     metrics = {
         "test_auc": round(float(auc), 4),
         "n_train": len(X_train),
