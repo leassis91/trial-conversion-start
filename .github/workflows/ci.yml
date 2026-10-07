@@ -29,6 +29,16 @@ jobs:
       # models/model.json from your bucket, and put it where it has to go.
       # The publish job below does the same download; read it for the
       # shape, then decide the position here yourself.
+      - name: Pull the published model from S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-2
+        run: >
+          uv run --with boto3 python -c "import boto3;
+          boto3.client('s3').download_file(
+          'trial-conversion-artifacts-leandro',
+          'models/model.json', 'models/model.json')"
 
       - name: Test
         run: uv run pytest
@@ -53,11 +63,11 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: <your-region>
+          AWS_DEFAULT_REGION: us-east-2
         run: >
           uv run --with boto3 python -c "import boto3;
           boto3.client('s3').download_file(
-          '<your-bucket-name>',
+          'trial-conversion-artifacts-leandro',
           'models/model.json', 'models/model.json')"
 
       # The registry is where CI hands the image to the server. The
@@ -71,7 +81,7 @@ jobs:
 
       - name: Build and push the image
         run: |
-          IMAGE=ghcr.io/<your-github-username>/trial-conversion-model
+          IMAGE=ghcr.io/leassis91/trial-conversion-model
           docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} .
           docker push $IMAGE:latest
           docker push $IMAGE:${{ github.sha }}
@@ -91,6 +101,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo docker pull ghcr.io/<your-github-username>/trial-conversion-model:latest
+            sudo docker pull ghcr.io/leassis91/trial-conversion-model:latest
             sudo docker rm -f trial-conversion || true
-            sudo docker run -d --restart unless-stopped --name trial-conversion -p 8000:8000 ghcr.io/<your-github-username>/trial-conversion-model:latest
+            sudo docker run -d --restart unless-stopped --name trial-conversion -p 8000:8000 ghcr.io/leassis91/trial-conversion-model:latest
