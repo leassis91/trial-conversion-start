@@ -30,7 +30,10 @@ def test_predict_returns_a_probability_and_a_band():
     # TODO: post VALID_TRIAL to /predict and assert three things: that the
     # request succeeded, that the conversion probability sits between 0 and
     # 1, and that the band is one of low, medium or high.
-    raise NotImplementedError
+    response = client.post("/predict", json=VALID_TRIAL)
+    assert response.status_code == 200
+    assert 0.0 <= response.json().get("conversion_probability") <= 1.0
+    assert response.json()["conversion_band"] in ["low", "medium", "high"]
 
 
 def test_predict_rejects_a_request_missing_a_field():
@@ -38,4 +41,7 @@ def test_predict_rejects_a_request_missing_a_field():
     # service turns it down with a 422. It does that only because your
     # schema declares the field required, so this test is what notices if
     # that ever quietly changes.
-    raise NotImplementedError
+
+    response = client.post("/predict", json=VALID_TRIAL.pop("country"))
+
+    assert response.status_code == 422
