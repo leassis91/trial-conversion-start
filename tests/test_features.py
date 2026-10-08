@@ -2,6 +2,16 @@ import pandas as pd
 
 from trial_conversion_model.features import add_features
 
+VALID_TRIAL = {
+    "sessions_day1": 0,
+    "sessions_day2": 0,
+    "sessions_day3": 0,
+    "listen_sessions_3d": 0,
+    "total_minutes_3d": 0,
+    "country": "US",
+    "device_type": "iOS",
+}
+
 
 def test_zero_session_trial_gets_zero_shares_not_nan():
     # TODO: write this one yourself, in three steps:
@@ -11,4 +21,9 @@ def test_zero_session_trial_gets_zero_shares_not_nan():
     #   2. Pass it through add_features.
     #   3. Assert that day1_share, listen_share and avg_session_minutes each
     #      come back as 0 rather than a missing value.
-    raise NotImplementedError
+    onerowdf = pd.DataFrame(VALID_TRIAL, index=[0])
+    df = add_features(onerowdf)
+
+    assert df["day1_share"].iloc[0] == 0
+    assert df["listen_share"].iloc[0] == 0
+    assert df["avg_session_minutes"].iloc[0] == 0
