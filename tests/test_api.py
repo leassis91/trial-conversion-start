@@ -15,11 +15,6 @@ VALID_TRIAL = {
 }
 
 
-# Written for you, as the worked example. The two below follow the same
-# shape: build a request, send it, state what should be true. Note that
-# this one checks the status key rather than the whole response body, so
-# that adding a field later does not fail a test that never meant to
-# promise anything about it.
 def test_health_returns_ok():
     response = client.get("/health")
     assert response.status_code == 200
@@ -27,9 +22,7 @@ def test_health_returns_ok():
 
 
 def test_predict_returns_a_probability_and_a_band():
-    # TODO: post VALID_TRIAL to /predict and assert three things: that the
-    # request succeeded, that the conversion probability sits between 0 and
-    # 1, and that the band is one of low, medium or high.
+
     response = client.post("/predict", json=VALID_TRIAL)
     assert response.status_code == 200
     assert 0.0 <= response.json().get("conversion_probability") <= 1.0
@@ -37,11 +30,6 @@ def test_predict_returns_a_probability_and_a_band():
 
 
 def test_predict_rejects_a_request_missing_a_field():
-    # TODO: post VALID_TRIAL with one field taken out, and assert the
-    # service turns it down with a 422. It does that only because your
-    # schema declares the field required, so this test is what notices if
-    # that ever quietly changes.
 
     response = client.post("/predict", json=VALID_TRIAL.pop("country"))
-
     assert response.status_code == 422
