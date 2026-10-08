@@ -2,12 +2,14 @@ import pandas as pd
 
 from trial_conversion_model.features import add_features
 
+pd.set_option("future.no_silent_downcasting", True)
+
 VALID_TRIAL = {
-    "sessions_day1": 0,
-    "sessions_day2": 0,
-    "sessions_day3": 0,
-    "listen_sessions_3d": 0,
-    "total_minutes_3d": 0,
+    "sessions_day1": None,
+    "sessions_day2": None,
+    "sessions_day3": None,
+    "listen_sessions_3d": None,
+    "total_minutes_3d": None,
     "country": "US",
     "device_type": "iOS",
 }
