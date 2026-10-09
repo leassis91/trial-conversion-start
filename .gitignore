@@ -24,3 +24,7 @@ models/*
 mlflow.db
 mlruns/
 mlartifacts/
+
+# Logs
+logs/
+logs/*
