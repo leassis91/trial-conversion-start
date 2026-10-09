@@ -28,3 +28,6 @@ mlartifacts/
 # Logs
 logs/
 logs/*
+
+# Notebooks
+notebooks/exploration02.ipynb
