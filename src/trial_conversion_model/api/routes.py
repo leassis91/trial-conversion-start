@@ -48,7 +48,7 @@ def to_jsonl(
 
 @router.get("/health")
 def health() -> dict:
-    return {"status": "ok", "version": "0.4.0"}
+    return {"status": "ok", "version": "0.5.0"}
 
 
 @router.post("/predict", response_model=PredictionResponse)
