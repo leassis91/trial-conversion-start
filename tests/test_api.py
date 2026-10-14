@@ -31,5 +31,7 @@ def test_predict_returns_a_probability_and_a_band():
 
 def test_predict_rejects_a_request_missing_a_field():
 
-    response = client.post("/predict", json=VALID_TRIAL.pop("country"))
+    payload = dict(VALID_TRIAL)  # same data, separate dict
+    del payload["country"]  # remove one required field
+    response = client.post("/predict", json=payload)
     assert response.status_code == 422
