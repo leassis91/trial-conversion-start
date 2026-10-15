@@ -5,8 +5,11 @@ from pathlib import Path
 import boto3
 import pandas as pd
 from dotenv import load_dotenv
+from evidently import Report
+from evidently.presets import DataDriftPreset
 
 from trial_conversion_model.data import RAW_DATA
+from trial_conversion_model.features import add_features
 
 REPORT_DIR = Path("monitoring")
 
@@ -37,7 +40,14 @@ def run_drift_check(current: pd.DataFrame, reference: pd.DataFrame) -> object:
     # Build Evidently's Report with one DataDriftPreset, using DRIFT_SHARE as
     # its drift_share, then run it against both prepared frames and return
     # the result.
-    raise NotImplementedError
+
+    ref = add_features(reference)
+    cur = add_features(current)
+
+    report = Report([DataDriftPreset(drift_share=DRIFT_SHARE)])
+    snapshot = report.run(reference_data=ref, current_data=cur)
+
+    return snapshot
 
 
 def drifted_share(snapshot: object) -> float:
@@ -57,7 +67,9 @@ def publish_report(snapshot: object, name: str) -> dict:
     snapshot.save_html(str(html_path))
     share = drifted_share(snapshot)
     json_path.write_text(
-        json.dumps({"name": name, "drifted_share": share, "drift": share >= DRIFT_SHARE})
+        json.dumps(
+            {"name": name, "drifted_share": share, "drift": share >= DRIFT_SHARE}
+        )
     )
 
     bucket = os.environ["S3_BUCKET"]

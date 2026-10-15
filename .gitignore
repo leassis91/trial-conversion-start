@@ -29,5 +29,8 @@ mlartifacts/
 logs/
 logs/*
 
+# Monitoring
+monitoring/
+
 # Notebooks
 notebooks/exploration02.ipynb
