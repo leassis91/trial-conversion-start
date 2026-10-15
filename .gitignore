@@ -34,3 +34,7 @@ monitoring/
 
 # Notebooks
 notebooks/exploration02.ipynb
+
+# AWS
+scripts/list_cohorts.py
+scripts/download_cohort.py
