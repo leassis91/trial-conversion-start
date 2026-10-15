@@ -9,7 +9,7 @@ from evidently import Report
 from evidently.presets import DataDriftPreset
 
 from trial_conversion_model.data import RAW_DATA
-from trial_conversion_model.features import add_features
+from trial_conversion_model.features import FEATURES, add_features
 
 REPORT_DIR = Path("monitoring")
 
@@ -41,8 +41,8 @@ def run_drift_check(current: pd.DataFrame, reference: pd.DataFrame) -> object:
     # its drift_share, then run it against both prepared frames and return
     # the result.
 
-    ref = add_features(reference)
-    cur = add_features(current)
+    ref = add_features(reference)[FEATURES]
+    cur = add_features(current)[FEATURES]
 
     report = Report([DataDriftPreset(drift_share=DRIFT_SHARE)])
     snapshot = report.run(reference_data=ref, current_data=cur)
