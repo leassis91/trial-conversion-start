@@ -1,7 +1,10 @@
 import sys
 from pathlib import Path
 
+import boto3
 import pandas as pd
+from botocore import UNSIGNED
+from botocore.config import Config
 
 from trial_conversion_model.monitoring import (
     load_reference,
@@ -19,6 +22,17 @@ if __name__ == "__main__":
     # Read the cohort file, check it for drift against the reference,
     # then publish the report. Name it after the cohort file, so you can tell
     # one report from another later. Call what you get back `result`.
+
+    if not cohort_path.exists():
+        s3 = boto3.client(
+            "s3", region_name="eu-north-1", config=Config(signature_version=UNSIGNED)
+        )
+        cohort_path.parent.mkdir(parents=True, exist_ok=True)
+        s3.download_file(
+            Bucket="fpds-trial-cohorts",
+            Key=f"cohorts/{cohort_path.name}",
+            Filename=str(cohort_path),
+        )
 
     cur = pd.read_parquet(cohort_path)
     snapshot = run_drift_check(cur, load_reference())
