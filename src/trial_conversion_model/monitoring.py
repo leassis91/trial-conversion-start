@@ -29,17 +29,6 @@ def run_drift_check(current: pd.DataFrame, reference: pd.DataFrame) -> object:
     Labels for live trials are 11+ days away, so input drift is the
     earliest signal that the world has shifted under the model.
     """
-    # TODO: This function needs imports that are not in this file yet. Add
-    # them as you go.
-    #
-    # Both frames arrive as raw base aggregates. See build_training_data
-    # in features.py and predict_proba in predict.py for how the rest of the
-    # project derives the model's features, then stop where they start
-    # one-hot encoding: a drift test wants the categorical columns as they are.
-    #
-    # Build Evidently's Report with one DataDriftPreset, using DRIFT_SHARE as
-    # its drift_share, then run it against both prepared frames and return
-    # the result.
 
     ref = add_features(reference)[FEATURES]
     cur = add_features(current)[FEATURES]
