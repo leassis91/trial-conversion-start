@@ -1,3 +1,4 @@
+import os
 import json
 from pathlib import Path
 
@@ -53,7 +54,7 @@ def train(model_dir: Path = MODEL_DIR) -> dict:
     ###############################################
     # Uploading to S3 and keeping it local as well (as a dev env)
     s3 = boto3.client("s3")
-    bucket = "trial-conversion-artifacts-leandro"
+    bucket = os.environ["S3_BUCKET"]
 
     with open((model_dir / "model.json"), "rb") as file_name:
         s3.upload_fileobj(file_name, bucket, "models/model.json")

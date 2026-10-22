@@ -12,6 +12,8 @@ from trial_conversion_model.data import RAW_DATA
 from trial_conversion_model.features import FEATURES, add_features
 
 REPORT_DIR = Path("monitoring")
+# The reference sits in the bucket next to models/ and predictions/.
+REFERENCE_KEY = "data/trial_snapshot.csv"
 
 # The convention the report is built with: the dataset counts as drifted
 # when at least half of the features have drifted individually.
@@ -19,7 +21,16 @@ DRIFT_SHARE = 0.5
 
 
 def load_reference(path: Path = RAW_DATA) -> pd.DataFrame:
-    """The training extract is the reference: what normal looked like."""
+    """The training extract is the reference: what normal looked like.
+
+    The jobs image carries no data, so the first run on a fresh machine
+    fetches the extract from the bucket where it was published once;
+    later runs find it on disk.
+    """
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        s3 = boto3.client("s3")
+        s3.download_file(os.environ["S3_BUCKET"], REFERENCE_KEY, str(path))
     return pd.read_csv(path)
 
 
@@ -29,14 +40,10 @@ def run_drift_check(current: pd.DataFrame, reference: pd.DataFrame) -> object:
     Labels for live trials are 11+ days away, so input drift is the
     earliest signal that the world has shifted under the model.
     """
-
     ref = add_features(reference)[FEATURES]
     cur = add_features(current)[FEATURES]
-
     report = Report([DataDriftPreset(drift_share=DRIFT_SHARE)])
-    snapshot = report.run(reference_data=ref, current_data=cur)
-
-    return snapshot
+    return report.run(reference_data=ref, current_data=cur)
 
 
 def drifted_share(snapshot: object) -> float:
@@ -56,9 +63,7 @@ def publish_report(snapshot: object, name: str) -> dict:
     snapshot.save_html(str(html_path))
     share = drifted_share(snapshot)
     json_path.write_text(
-        json.dumps(
-            {"name": name, "drifted_share": share, "drift": share >= DRIFT_SHARE}
-        )
+        json.dumps({"name": name, "drifted_share": share, "drift": share >= DRIFT_SHARE})
     )
 
     bucket = os.environ["S3_BUCKET"]
