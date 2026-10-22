@@ -22,9 +22,7 @@ def pull_newest_cohort() -> Path:
         "s3", region_name="eu-north-1", config=Config(signature_version=UNSIGNED)
     )
     listing = s3.list_objects_v2(Bucket=COHORT_BUCKET, Prefix=COHORT_PREFIX)
-    # TODO: Decide which file in the bucket is the newest. Look at how the
-    # cohort files are named and what that means for sorting them. Call the
-    # winner `key`.
+
     cohort_list = []
     for obj in listing["Contents"]:
         cohort_list.append(obj["Key"])
