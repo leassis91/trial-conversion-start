@@ -6,6 +6,7 @@ import pandas as pd
 from dotenv import load_dotenv
 
 from trial_conversion_model.cohorts import pull_newest_cohort
+from trial_conversion_model.predict import load_model, predict_proba
 
 PREDICTIONS_DIR = Path("data/04_predictions")
 
@@ -21,6 +22,13 @@ if __name__ == "__main__":
     # conversion_probability from the same predict function your API serves
     # (routes.py shows how it's called), with the trials most likely to
     # cancel at the top. Call what you get back `scored`.
+
+    conversion_probability_series = predict_proba(load_model(), cohort)
+    conversion_probability = conversion_probability_series.round(4)
+
+    scored = cohort[["trial_id"]].copy()
+    scored["conversion_probability"] = conversion_probability
+    scored = scored.sort_values("conversion_probability", ascending=True)
 
     PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
     out_path = (

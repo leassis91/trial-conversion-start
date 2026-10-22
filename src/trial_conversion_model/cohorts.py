@@ -25,6 +25,11 @@ def pull_newest_cohort() -> Path:
     # TODO: Decide which file in the bucket is the newest. Look at how the
     # cohort files are named and what that means for sorting them. Call the
     # winner `key`.
+    cohort_list = []
+    for obj in listing["Contents"]:
+        cohort_list.append(obj["Key"])
+    key = max(cohort_list)
+
     COHORT_DIR.mkdir(parents=True, exist_ok=True)
     path = COHORT_DIR / Path(key).name
     s3.download_file(COHORT_BUCKET, key, str(path))
