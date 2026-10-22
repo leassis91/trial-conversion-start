@@ -26,7 +26,8 @@ if __name__ == "__main__":
     conversion_probability_series = predict_proba(load_model(), cohort)
     conversion_probability = conversion_probability_series.round(4)
 
-    scored = cohort[["trial_id"]].copy()
+    # scored = cohort[["trial_id"]].copy()
+    scored = cohort.copy()
     scored["conversion_probability"] = conversion_probability
     scored = scored.sort_values("conversion_probability", ascending=True)
 
