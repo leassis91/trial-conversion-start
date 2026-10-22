@@ -29,11 +29,11 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: <your-region>
+          AWS_DEFAULT_REGION: us-east-2
         run: >
           uv run python -c "import boto3;
           boto3.client('s3').download_file(
-          '<your-bucket-name>',
+          'trial-conversion-artifacts-leandro',
           'models/model.json', 'models/model.json')"
 
       - name: Test
@@ -58,11 +58,11 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: <your-region>
+          AWS_DEFAULT_REGION: us-east-2
         run: >
           uv run --with boto3 python -c "import boto3;
           boto3.client('s3').download_file(
-          '<your-bucket-name>',
+          'trial-conversion-artifacts-leandro',
           'models/model.json', 'models/model.json')"
 
       # The registry is where CI hands the image to the server. The
@@ -76,7 +76,7 @@ jobs:
 
       - name: Build and push both images
         run: |
-          IMAGE=ghcr.io/<your-github-username>/trial-conversion-model
+          IMAGE=ghcr.io/leassis91/trial-conversion-model
           docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} .
           docker push $IMAGE:latest
           docker push $IMAGE:${{ github.sha }}
@@ -101,7 +101,7 @@ jobs:
           script: |
             # Cron starts a container from this image every morning, so the
             # pull here is what puts a pushed change into tomorrow's run.
-            sudo docker pull ghcr.io/<your-github-username>/trial-conversion-model-jobs:latest
-            sudo docker pull ghcr.io/<your-github-username>/trial-conversion-model:latest
+            sudo docker pull ghcr.io/leassis91/trial-conversion-model-jobs:latest
+            sudo docker pull ghcr.io/leassis91/trial-conversion-model:latest
             sudo docker rm -f trial-conversion || true
-            sudo docker run -d --restart unless-stopped --name trial-conversion -p 8000:8000 ghcr.io/<your-github-username>/trial-conversion-model:latest
+            sudo docker run -d --restart unless-stopped --name trial-conversion -p 8000:8000 ghcr.io/leassis91/trial-conversion-model:latest
