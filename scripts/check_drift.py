@@ -52,6 +52,6 @@ if __name__ == "__main__":
     verdict = "DRIFT" if result["drift"] else "OK"
     print(f"{verdict}: {pct_drift:.0%} of features drifted ({cohort_path.name})")
 
-    drift_msg = f"Drift alert: {result['drifted_share']:.0%} of features drifted in {cohort_path.stem}. Latest report in S3 under {REPORT_DIR}/;"
+    drift_msg = f"Drift alert: {result['drifted_share']:.0%} of features drifted in {cohort_path.stem}. Latest report in S3 under {REPORT_DIR}/."
     if verdict == "DRIFT":
         alert(message=drift_msg)
