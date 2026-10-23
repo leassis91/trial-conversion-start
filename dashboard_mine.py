@@ -1,9 +1,6 @@
 import json
-import os
 from pathlib import Path
 
-import altair as alt
-import boto3
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
